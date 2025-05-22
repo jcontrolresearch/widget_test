@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vector Component Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .widget-container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 25px;
+        }
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+        .input-group input[type="number"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .input-group input[type="number"]:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+        .results {
+            margin-top: 25px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+            text-align: left;
+        }
+        .results p {
+            margin-bottom: 10px;
+            font-size: 18px;
+            color: #333;
+        }
+        .results span {
+            font-weight: bold;
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="widget-container">
+        <h1>Vector Component Calculator</h1>
+
+        <div class="input-group">
+            <label for="magnitude">Vector Magnitude:</label>
+            <input type="number" id="magnitude" value="10">
+        </div>
+
+        <div class="input-group">
+            <label for="direction">Direction (degrees from positive x-axis):</label>
+            <input type="number" id="direction" value="30">
+        </div>
+
+        <div class="results">
+            <p>X Component: <span id="xComponent">0.00</span></p>
+            <p>Y Component: <span id="yComponent">0.00</span></p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const magnitudeInput = document.getElementById('magnitude');
+            const directionInput = document.getElementById('direction');
+            const xComponentSpan = document.getElementById('xComponent');
+            const yComponentSpan = document.getElementById('yComponent');
+
+            function calculateComponents() {
+                const magnitude = parseFloat(magnitudeInput.value);
+                let directionDegrees = parseFloat(directionInput.value);
+
+                if (isNaN(magnitude) || isNaN(directionDegrees)) {
+                    xComponentSpan.textContent = 'Invalid Input';
+                    yComponentSpan.textContent = 'Invalid Input';
+                    return;
+                }
+
+                // Convert degrees to radians
+                const directionRadians = directionDegrees * (Math.PI / 180);
+
+                const x = magnitude * Math.cos(directionRadians);
+                const y = magnitude * Math.sin(directionRadians);
+
+                xComponentSpan.textContent = x.toFixed(2);
+                yComponentSpan.textContent = y.toFixed(2);
+            }
+
+            // Initial calculation on page load
+            calculateComponents();
+
+            // Recalculate when input values change
+            magnitudeInput.addEventListener('input', calculateComponents);
+            directionInput.addEventListener('input', calculateComponents);
+        });
+    </script>
+</body>
+</html>
