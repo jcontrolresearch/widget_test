@@ -148,23 +148,60 @@
 
             function drawVector(ctx, magnitude, directionRadians, xComponent, yComponent) {
                 ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear previous drawing
+                
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height / 2;
+                const scaleFactor = 15; // Adjusted scale factor to better fit axes and labels
+                const padding = 30; // Padding from the edge of the canvas for axes
+
+                // --- Draw X-axis ---
+                ctx.strokeStyle = '#666'; // Darker gray for axes
+                ctx.lineWidth = 1;
                 ctx.beginPath();
+                ctx.moveTo(padding, centerY); // Start X-axis from near the left edge
+                ctx.lineTo(canvas.width - padding, centerY); // End X-axis near the right edge
+                ctx.stroke();
+
+                // Draw X-axis arrow
+                drawArrow(ctx, canvas.width - padding - 15, centerY, canvas.width - padding, centerY, 8); // Smaller arrow for axes
+
+                // Label X-axis
+                ctx.fillStyle = 'black';
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'top';
+                ctx.fillText('X-axis', canvas.width - padding, centerY + 5);
+
+                // --- Draw Y-axis ---
+                ctx.beginPath();
+                ctx.moveTo(centerX, canvas.height - padding); // Start Y-axis from near the bottom edge
+                ctx.lineTo(centerX, padding); // End Y-axis near the top edge
+                ctx.stroke();
+
+                // Draw Y-axis arrow
+                drawArrow(ctx, centerX, padding + 15, centerX, padding, 8); // Smaller arrow for axes
+
+                // Label Y-axis
+                ctx.textAlign = 'left';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('Y-axis', centerX + 5, padding);
+
+
+                // --- Draw the vector components ---
                 ctx.strokeStyle = '#007bff';
                 ctx.lineWidth = 2;
 
-                const centerX = canvas.width / 2;
-                const centerY = canvas.height / 2;
-                const vectorEndX = centerX + xComponent * 20;  // Scale factor for better visualization
-                const vectorEndY = centerY - yComponent * 20;  // Y-axis is inverted in canvas
+                const vectorEndX = centerX + xComponent * scaleFactor;
+                const vectorEndY = centerY - yComponent * scaleFactor; // Y-axis is inverted in canvas
 
-                // Draw vector
+                // Draw resultant vector
                 drawArrow(ctx, centerX, centerY, vectorEndX, vectorEndY);
 
                 // Draw x-component
                 ctx.strokeStyle = 'green';
                 ctx.lineWidth = 1;
                 ctx.beginPath();
-                 ctx.moveTo(centerX, centerY);
+                ctx.moveTo(centerX, centerY);
                 ctx.lineTo(vectorEndX, centerY);
                 ctx.stroke();
 
@@ -178,8 +215,11 @@
                 // Label components
                 ctx.fillStyle = 'black';
                 ctx.font = '12px Arial';
-                ctx.fillText('X', vectorEndX + 5, centerY);
-                ctx.fillText('Y', centerX - 15, vectorEndY - 5);
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'top';
+                ctx.fillText('X', vectorEndX, centerY + 5); // Adjust label position
+                ctx.textBaseline = 'middle';
+                ctx.fillText('Y', centerX - 15, vectorEndY); // Adjust label position
             }
 
             // Initial calculation and drawing on page load
@@ -192,7 +232,6 @@
     </script>
 </body>
 </html>
-
 <!-- <!DOCTYPE html>
 <html lang="en">
 <head>
