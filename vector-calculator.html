@@ -22,6 +22,201 @@
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             text-align: center;
+            max-width: 600px; /* Increased width to accommodate canvas */
+            width: 100%;
+            display: flex; /* Added flex layout */
+            flex-direction: column; /* Stack items vertically */
+            align-items: center; /* Center items horizontally */
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 25px;
+        }
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+            width: 100%; /* Ensure input groups take full width */
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+        .input-group input[type="number"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .input-group input[type="number"]:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+        .results {
+            margin-top: 25px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+            text-align: left;
+            width: 100%; /* Ensure results take full width */
+        }
+        .results p {
+            margin-bottom: 10px;
+            font-size: 18px;
+            color: #333;
+        }
+        .results span {
+            font-weight: bold;
+            color: #007bff;
+        }
+        canvas {
+            border: 1px solid #ccc;
+            margin-top: 20px; /* Add margin above the canvas */
+            width: 400px; /* Set canvas width */
+            height: 300px; /* Set canvas height */
+        }
+    </style>
+</head>
+<body>
+    <div class="widget-container">
+        <h1>Vector Component Calculator</h1>
+
+        <div class="input-group">
+            <label for="magnitude">Vector Magnitude:</label>
+            <input type="number" id="magnitude" value="10">
+        </div>
+
+        <div class="input-group">
+            <label for="direction">Direction (degrees from positive x-axis):</label>
+            <input type="number" id="direction" value="30">
+        </div>
+
+        <div class="results">
+            <p>X Component: <span id="xComponent">0.00</span></p>
+            <p>Y Component: <span id="yComponent">0.00</span></p>
+        </div>
+
+        <canvas id="vectorCanvas"></canvas>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const magnitudeInput = document.getElementById('magnitude');
+            const directionInput = document.getElementById('direction');
+            const xComponentSpan = document.getElementById('xComponent');
+            const yComponentSpan = document.getElementById('yComponent');
+            const canvas = document.getElementById('vectorCanvas');
+            const ctx = canvas.getContext('2d');
+
+            function drawArrow(ctx, fromX, fromY, toX, toY, headLength = 10) {
+                const dx = toX - fromX;
+                const dy = toY - fromY;
+                const angle = Math.atan2(dy, dx);
+                ctx.beginPath();
+                ctx.moveTo(fromX, fromY);
+                ctx.lineTo(toX, toY);
+                ctx.lineTo(toX - headLength * Math.cos(angle - Math.PI / 6), toY - headLength * Math.sin(angle - Math.PI / 6));
+                ctx.moveTo(toX, toY);
+                ctx.lineTo(toX - headLength * Math.cos(angle + Math.PI / 6), toY - headLength * Math.sin(angle + Math.PI / 6));
+                ctx.stroke();
+            }
+
+            function calculateComponents() {
+                const magnitude = parseFloat(magnitudeInput.value);
+                let directionDegrees = parseFloat(directionInput.value);
+
+                if (isNaN(magnitude) || isNaN(directionDegrees)) {
+                    xComponentSpan.textContent = 'Invalid Input';
+                    yComponentSpan.textContent = 'Invalid Input';
+                    return;
+                }
+
+                // Convert degrees to radians
+                const directionRadians = directionDegrees * (Math.PI / 180);
+
+                const x = magnitude * Math.cos(directionRadians);
+                const y = magnitude * Math.sin(directionRadians);
+
+                xComponentSpan.textContent = x.toFixed(2);
+                yComponentSpan.textContent = y.toFixed(2);
+
+                // Draw on canvas
+                drawVector(ctx, magnitude, directionRadians, x, y);
+            }
+
+            function drawVector(ctx, magnitude, directionRadians, xComponent, yComponent) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear previous drawing
+                ctx.beginPath();
+                ctx.strokeStyle = '#007bff';
+                ctx.lineWidth = 2;
+
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height / 2;
+                const vectorEndX = centerX + xComponent * 20;  // Scale factor for better visualization
+                const vectorEndY = centerY - yComponent * 20;  // Y-axis is inverted in canvas
+
+                // Draw vector
+                drawArrow(ctx, centerX, centerY, vectorEndX, vectorEndY);
+
+                // Draw x-component
+                ctx.strokeStyle = 'green';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                 ctx.moveTo(centerX, centerY);
+                ctx.lineTo(vectorEndX, centerY);
+                ctx.stroke();
+
+                // Draw y-component
+                ctx.strokeStyle = 'red';
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.lineTo(centerX, vectorEndY);
+                ctx.stroke();
+
+                // Label components
+                ctx.fillStyle = 'black';
+                ctx.font = '12px Arial';
+                ctx.fillText('X', vectorEndX + 5, centerY);
+                ctx.fillText('Y', centerX - 15, vectorEndY - 5);
+            }
+
+            // Initial calculation and drawing on page load
+            calculateComponents();
+
+            // Recalculate and redraw when input values change
+            magnitudeInput.addEventListener('input', calculateComponents);
+            directionInput.addEventListener('input', calculateComponents);
+        });
+    </script>
+</body>
+</html>
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vector Component Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .widget-container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
             max-width: 400px;
             width: 100%;
         }
@@ -124,4 +319,4 @@
         });
     </script>
 </body>
-</html>
+</html> -->
